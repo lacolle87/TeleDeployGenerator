@@ -2,13 +2,11 @@
 import os
 
 
-def create_env_file(dir_name, file_name, superuser_id):
-    full_path = os.path.join(str(dir_name), str(file_name))
-    env_file_path = os.path.join(str(full_path), "env", ".env")
+def create_env_file(dir_name, superuser_id):
+    env_file_path = os.path.join(dir_name, "env", ".env")
 
     try:
-        if not os.path.exists(dir_name):
-            os.makedirs(dir_name)
+        os.makedirs(os.path.dirname(env_file_path), exist_ok=True)
 
         if not os.path.exists(env_file_path):
             with open(env_file_path, "w") as env_file:
@@ -37,8 +35,8 @@ def main():
     superuser_id = input("Enter superuser id: ")
 
     for path_name in path_names:
-        dir_name, file_name = os.path.split(str(path_name.strip()))
-        create_env_file(dir_name, file_name, superuser_id)
+        dir_name = path_name.strip()
+        create_env_file(dir_name, superuser_id)
 
     print("Everything is set up.")
 
