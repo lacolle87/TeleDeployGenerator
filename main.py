@@ -35,7 +35,7 @@ def generate_deploy_script(path_names):
         script_file.write(""" docker-compose -f docker-compose.yml --env-file ./env/.env up -d\n""")
         script_file.write(""" cd ..\n}\n\n""")
         script_file.write("""# List of services to deploy\n""")
-        script_file.write(f"services=({' '.join(path_names)})\n\n""")
+        script_file.write(f"services=({' '.join([f'\"{path}\"' for path in path_names])})\n\n")
         script_file.write("""# Deploy each service\n""")
         script_file.write("""for service in "${services[@]}"; do\n""")
         script_file.write(""" deploy_service $service\n""")
