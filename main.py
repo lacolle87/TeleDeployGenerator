@@ -3,6 +3,7 @@ import os
 import getpass
 from collections import OrderedDict
 
+
 def create_env_file(dir_name, env_variables):
     env_file_path = os.path.join(dir_name, "env", ".env")
 
@@ -19,6 +20,7 @@ def create_env_file(dir_name, env_variables):
 
     except OSError as e:
         print(f"Error: {e}")
+
 
 def generate_deploy_script(path_names):
     with open("deploy_services.sh", "w") as script_file:
@@ -43,12 +45,14 @@ def generate_deploy_script(path_names):
         script_file.write("""# Clean up: Delete docker-compose.yml from eqm directory\n""")
         script_file.write("""rm docker-compose.yml\n""")
 
+
 def confirm_variables(env_variables):
     print("Please review the entered variables:")
     for key, value in env_variables.items():
         print(f"{key}: {value}")
     confirm = input("Are these variables correct? (yes/no): ").strip().lower()
     return confirm.startswith("y")
+
 
 def main():
     path_names = input("Enter path names separated by commas: ").split(",")
@@ -86,6 +90,7 @@ def main():
         print("Deployment script generated: deploy_services.sh")
     else:
         print("No deployment script generated.")
+
 
 if __name__ == "__main__":
     main()
