@@ -42,6 +42,13 @@ def generate_deploy_script(path_names):
         script_file.write("""# Clean up: Delete docker-compose.yml from eqm directory\n""")
         script_file.write("""rm docker-compose.yml\n""")
 
+def confirm_variables(env_variables):
+    print("Please review the entered variables:")
+    for key, value in env_variables.items():
+        print(f"{key}: {value}")
+    confirm = input("Are these variables correct? (yes/no): ").strip().lower()
+    return confirm.startswith("y")
+
 def main():
     path_names = input("Enter path names separated by commas: ").split(",")
     superuser_id = input("Enter superuser id: ")
@@ -62,6 +69,10 @@ def main():
         ("DB_PORT", db_port),
         ("MYSQL_DATABASE", superuser_id)
     ])
+
+    if not confirm_variables(env_variables):
+        print("Please re-enter the variables.")
+        return
 
     for path_name in path_names:
         dir_name = path_name.strip()
