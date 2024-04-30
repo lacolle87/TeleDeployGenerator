@@ -15,6 +15,7 @@ def create_env_file(dir_name, env_variables):
                 for key, value in env_variables.items():
                     env_file.write(f"{key}={value}\n")
             print(f"Created {env_file_path}")
+            print("")
         else:
             print(f"Env file already exists at {env_file_path}")
 
@@ -49,7 +50,10 @@ def generate_deploy_script(path_names):
 def confirm_variables(env_variables):
     print("Please review the entered variables:")
     for key, value in env_variables.items():
-        print(f"{key}: {value}")
+        if key.lower().find('password') != -1:
+            print(f"{key}: {'*' * len(value)}")
+        else:
+            print(f"{key}: {value}")
     confirm = input("Are these variables correct? (yes/no): ").strip().lower()
     return confirm.startswith("y")
 
@@ -57,13 +61,11 @@ def confirm_variables(env_variables):
 def main():
     path_names = input("Enter path names separated by commas: ").split(",")
     superuser_id = input("Enter superuser id: ")
-    telegram_bot_token = input("Enter TELEGRAM_BOT_TOKEN: ").strip()
     password = getpass.getpass("Enter MySQL password: ").strip()
     db_host = input("Enter database host: ").strip()
     db_port = input("Enter database port: ").strip()
 
     env_variables = OrderedDict([
-        ("TELEGRAM_BOT_TOKEN", telegram_bot_token),
         ("SUPERUSER_ID", superuser_id),
         ("DEVMODE", "false"),
         ("TZ", "Europe/Moscow"),
@@ -75,12 +77,14 @@ def main():
         ("MYSQL_DATABASE", superuser_id)
     ])
 
-    if not confirm_variables(env_variables):
-        print("Please re-enter the variables.")
-        return
-
     for path_name in path_names:
+        telegram_bot_token = input(f"Enter TELEGRAM_BOT_TOKEN for {path_name}: ").strip()
+        print("")
+        env_variables["TELEGRAM_BOT_TOKEN"] = telegram_bot_token
         dir_name = path_name.strip()
+        if not confirm_variables(env_variables):
+            print("Please re-enter the variables.")
+            return
         create_env_file(dir_name, env_variables)
 
     generate_script = input("Do you want to generate the deployment script? (yes/no): ").strip().lower()
