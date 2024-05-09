@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 import os
+import sys
 import getpass
 from collections import OrderedDict
+
+MYSQL_TEXT = "MySQL"
+POSTGRESQL_TEXT = "PostgreSQL"
 
 
 def create_env_file(dir_name, env_variables):
@@ -62,21 +66,42 @@ def main():
     try:
         path_names = input("Enter path names separated by commas: ").split(",")
         superuser_id = input("Enter superuser id: ")
-        password = getpass.getpass("Enter MySQL password: ").strip()
+        password = getpass.getpass(
+            f"Enter {MYSQL_TEXT if '-p' not in sys.argv else POSTGRESQL_TEXT} password: ").strip()
         db_host = input("Enter database host: ").strip()
         db_port = input("Enter database port: ").strip()
 
-        env_variables = OrderedDict([
-            ("SUPERUSER_ID", superuser_id),
-            ("DEVMODE", "false"),
-            ("TZ", "Europe/Moscow"),
-            ("MYSQL_USER", superuser_id),
-            ("MYSQL_PASSWORD", password),
-            ("MYSQL_ROOT_PASSWORD", password),
-            ("DB_HOST", db_host),
-            ("DB_PORT", db_port),
-            ("MYSQL_DATABASE", superuser_id)
-        ])
+        if "-p" in sys.argv:
+            db_type = "postgresql"
+        else:
+            db_type = "mysql"
+
+        if db_type == 'mysql':
+            env_variables = OrderedDict([
+                ("SUPERUSER_ID", superuser_id),
+                ("DEVMODE", "false"),
+                ("TZ", "Europe/Moscow"),
+                ("MYSQL_USER", superuser_id),
+                ("MYSQL_PASSWORD", password),
+                ("MYSQL_ROOT_PASSWORD", password),
+                ("DB_HOST", db_host),
+                ("DB_PORT", db_port),
+                ("MYSQL_DATABASE", superuser_id)
+            ])
+        elif db_type == 'postgresql':
+            env_variables = OrderedDict([
+                ("SUPERUSER_ID", superuser_id),
+                ("DEVMODE", "false"),
+                ("TZ", "Europe/Moscow"),
+                ("POSTGRES_USER", superuser_id),
+                ("POSTGRES_PASSWORD", password),
+                ("POSTGRES_DB", superuser_id),
+                ("DB_HOST", db_host),
+                ("DB_PORT", db_port)
+            ])
+        else:
+            print("Unsupported database type. Exiting.")
+            return
 
         for path_name in path_names:
             telegram_bot_token = input(f"Enter TELEGRAM_BOT_TOKEN for {path_name}: ").strip()
