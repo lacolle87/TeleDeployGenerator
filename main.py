@@ -59,41 +59,45 @@ def confirm_variables(env_variables):
 
 
 def main():
-    path_names = input("Enter path names separated by commas: ").split(",")
-    superuser_id = input("Enter superuser id: ")
-    password = getpass.getpass("Enter MySQL password: ").strip()
-    db_host = input("Enter database host: ").strip()
-    db_port = input("Enter database port: ").strip()
+    try:
+        path_names = input("Enter path names separated by commas: ").split(",")
+        superuser_id = input("Enter superuser id: ")
+        password = getpass.getpass("Enter MySQL password: ").strip()
+        db_host = input("Enter database host: ").strip()
+        db_port = input("Enter database port: ").strip()
 
-    env_variables = OrderedDict([
-        ("SUPERUSER_ID", superuser_id),
-        ("DEVMODE", "false"),
-        ("TZ", "Europe/Moscow"),
-        ("MYSQL_USER", superuser_id),
-        ("MYSQL_PASSWORD", password),
-        ("MYSQL_ROOT_PASSWORD", password),
-        ("DB_HOST", db_host),
-        ("DB_PORT", db_port),
-        ("MYSQL_DATABASE", superuser_id)
-    ])
+        env_variables = OrderedDict([
+            ("SUPERUSER_ID", superuser_id),
+            ("DEVMODE", "false"),
+            ("TZ", "Europe/Moscow"),
+            ("MYSQL_USER", superuser_id),
+            ("MYSQL_PASSWORD", password),
+            ("MYSQL_ROOT_PASSWORD", password),
+            ("DB_HOST", db_host),
+            ("DB_PORT", db_port),
+            ("MYSQL_DATABASE", superuser_id)
+        ])
 
-    for path_name in path_names:
-        telegram_bot_token = input(f"Enter TELEGRAM_BOT_TOKEN for {path_name}: ").strip()
-        print("")
-        env_variables["TELEGRAM_BOT_TOKEN"] = telegram_bot_token
-        dir_name = path_name.strip()
-        if not confirm_variables(env_variables):
-            print("Please re-enter the variables.")
-            return
-        create_env_file(dir_name, env_variables)
+        for path_name in path_names:
+            telegram_bot_token = input(f"Enter TELEGRAM_BOT_TOKEN for {path_name}: ").strip()
+            print("")
+            env_variables["TELEGRAM_BOT_TOKEN"] = telegram_bot_token
+            dir_name = path_name.strip()
+            if not confirm_variables(env_variables):
+                print("Please re-enter the variables.")
+                return
+            create_env_file(dir_name, env_variables)
 
-    generate_script = input("Do you want to generate the deployment script? (yes/no): ").strip().lower()
+        generate_script = input("Do you want to generate the deployment script? (yes/no): ").strip().lower()
 
-    if generate_script.startswith("y"):
-        generate_deploy_script(path_names)
-        print("Deployment script generated: deploy_services.sh")
-    else:
-        print("No deployment script generated.")
+        if generate_script.startswith("y"):
+            generate_deploy_script(path_names)
+            print("Deployment script generated: deploy_services.sh")
+        else:
+            print("No deployment script generated.")
+
+    except KeyboardInterrupt:
+        print("\nProcess interrupted. Exiting...")
 
 
 if __name__ == "__main__":
