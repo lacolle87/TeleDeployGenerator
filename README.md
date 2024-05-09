@@ -31,7 +31,7 @@ cd TeleDeployGenerator
 
 ```bash 
 chmod +x main.py 
-sudo mv main.py /usr/local/bin/initbot
+sudo cp main.py /usr/local/bin/initbot
 ```
 
 4. **Generate Environment Variables**: Run the script. MariaDB (MySQL) is the default database option. If you prefer PostgreSQL, include the `-p` flag.
